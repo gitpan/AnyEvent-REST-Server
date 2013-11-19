@@ -7,7 +7,8 @@ use AnyEvent::Handle;
 use AnyEvent::Socket;
 use Log::Any qw($log);
 
-our $VERSION = 0.02;
+
+our $VERSION = 0.03;
 
 
 my $HTTP_CODE_TEXT = {
@@ -96,7 +97,7 @@ sub register {
 sub start {
     my $self = shift;
 
-    $log->debug("Setting up AnyEvent::REST::Server.");
+    $log->debug("Setting up AnyEvent::REST::Server on $self->{host}:$self->{port}.");
 
     $self->{tcp_server} = tcp_server(
         $self->{host},
@@ -181,7 +182,7 @@ sub read_http_body {
 
     my $command = $self->{connections}{$id}{command};
     my $location = $self->{connections}{$id}{location};
-    $log->debug("HTTP $command request for $location from $id.");
+    $log->debug("$id HTTP $command $location");
     $self->request($id, "$command $location");
 
     $self->cleanup_restart($id);
