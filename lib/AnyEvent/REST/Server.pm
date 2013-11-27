@@ -8,7 +8,7 @@ use AnyEvent::Socket;
 use Log::Any qw($log);
 
 
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 
 
 my $HTTP_CODE_TEXT = {
@@ -76,9 +76,7 @@ sub new {
     my $invocant = shift;
     my $class = ref($invocant) || $invocant;
 
-    my $self = {
-        @_
-    };
+    my $self = { @_ };
     bless $self, $class;
 
     return $self;
@@ -133,6 +131,7 @@ sub read_http_command {
             my ($handle, $data) = @_;
             $self->{connections}{$id}{command} = $1;
             $self->{connections}{$id}{location} = $2;
+            $self->{connections}{$id}{location} = $1 if ($self->{connections}{$id}{location} =~ /(.*)\/$/);
             $self->{connections}{$id}{version} = $3;
 
             if ($self->can_handle("$1 $2")) {
