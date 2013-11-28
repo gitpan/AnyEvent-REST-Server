@@ -8,7 +8,7 @@ use AnyEvent::Socket;
 use Log::Any qw($log);
 
 
-our $VERSION = 0.04;
+our $VERSION = 0.05;
 
 
 my $HTTP_CODE_TEXT = {
@@ -131,10 +131,13 @@ sub read_http_command {
             my ($handle, $data) = @_;
             $self->{connections}{$id}{command} = $1;
             $self->{connections}{$id}{location} = $2;
-            $self->{connections}{$id}{location} = $1 if ($self->{connections}{$id}{location} =~ /(.*)\/$/);
             $self->{connections}{$id}{version} = $3;
 
-            if ($self->can_handle("$1 $2")) {
+            if ($self->{connections}{$id}{location} =~ /(.*)\/$/) {
+                $self->{connections}{$id}{location} = $1;
+            }
+
+            if ($self->can_handle("$self->{connections}{$id}{command} $self->{connections}{$id}{location}")) {
                 $self->read_http_header($id);
             }
             else {
